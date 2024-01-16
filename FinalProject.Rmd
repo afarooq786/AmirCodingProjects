@@ -1,0 +1,41 @@
+---
+title: "STAT 308 Final Project"
+output: html_document
+date: "2023-04-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+recidivism <- read.csv("../STAT 308/RiskScore.csv")
+recidivism <- na.omit(recidivism)
+```
+
+```{r}
+mod <- lm(Supervision_Risk_Score_First ~ ., recidivism)
+summary(mod)
+plot(mod,1)
+plot(mod,2)
+```
+```{r}
+mod_step <- step(mod)
+```
+
+```{r}
+plot(mod_step,1)
+plot(mod_step,2)
+```
+
+```{r}
+library(ggplot2)
+ggplot(recidivism, aes(x=Race, y=Supervision_Risk_Score_First)) +  geom_boxplot(fill='yellow')
+
+ggplot(recidivism, aes(x=Gender, y=Supervision_Risk_Score_First)) +  geom_boxplot(fill='red')
+
+ggplot(recidivism, aes(x=Age_at_Release, y=Supervision_Risk_Score_First)) + geom_boxplot(fill='green')
+
+ggplot(recidivism, aes(x=Recidivism_Within_3years, y=Supervision_Risk_Score_First)) +geom_boxplot(fill='yellow')
+```
+
