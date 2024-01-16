@@ -1,0 +1,93 @@
+---
+title: "DataScienceResearch"
+output: html_document
+date: "2023-05-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+ufc <- read.csv("../Data Science/ufcdata.csv")
+head(ufc)
+```
+
+```{r}
+ufc <- ufc %>%
+  filter(winby != "")
+ufc <- ufc %>%
+  filter(!is.na(B_Age),!is.na(B_Height),!is.na(B_Weight))
+ufc <- ufc %>%
+  filter(!is.na(R_Age),!is.na(R_Height),!is.na(R_Weight))
+ufc <- ufc[ufc$winner != "draw", ]
+ufc <- ufc[ufc$winner != "no contest", ]
+```
+
+```{r}
+ufc1 <- ufc
+ufc1$winner <- ifelse(ufc1$winner == "blue", 1, 0)
+```
+
+#1 is blue winning and 0 is red winning. This was done in order to do a binomial glm#
+
+```{r}
+blue_age <- glm(winner ~ B_Age, data = ufc1, family = "binomial")
+summary(blue_age)
+red_age <- glm(winner ~ R_Age, data = ufc1, family = "binomial")
+summary(red_age)
+```
+
+#The value for B_age is negative and the p_value is low indicating statistical significance. This means that an increase in the Blue fighters age means that the fighter has a lower probability of winning# #The value for R_age is positive and the p_value is low indicating statistical significance. This means that an increase in the Red fighters age means that the fighter has a higher probability of winning#
+
+```{r}
+blue_height <- glm(winner ~ B_Height, data = ufc1, family = "binomial")
+summary(blue_height)
+red_height <- glm(winner ~ R_Height, data = ufc1, family = "binomial")
+summary(red_height)
+```
+
+#Both the p-values for Blue and Red height are above 0.005 meaning they are not statistically significant. This means that height does not affect a fighters probability of winning.#
+
+```{r}
+blue_weight <- glm(winner ~ B_Weight, data = ufc1, family = "binomial")
+summary(blue_weight)
+red_weight <- glm(winner ~ R_Weight, data = ufc1, family = "binomial")
+summary(red_weight)
+```
+
+#Both the p-values for Blue and Red height are above 0.005 meaning they are not statistically significant. This means that weight does not affect a fighters probability of winning.#
+
+```{r}
+ufc_blue <- ufc %>%
+  filter(winner == "blue")
+ggplot(ufc_blue, mapping = aes(x = B_Age)) + 
+  geom_bar(stat = "count", fill = "blue") +
+  ylab("Wins")
+```
+
+```{r}
+ufc_red <- ufc %>%
+  filter(winner == "red")
+ggplot(ufc_red, mapping = aes(x = R_Age)) + 
+  geom_bar(stat = "count", fill = "red") +
+  ylab("Wins")
+```
+
+```{r}
+ggplot(ufc, aes(x = winby, fill = winner,)) + 
+  geom_bar() +
+  ylab("Wins")
+```
+
+```{r}
+ggplot(ufc, aes(x = winner, fill = winby)) + 
+  geom_bar() +
+  ylab("Wins")
+```
+
+
+
